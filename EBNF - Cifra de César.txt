@@ -1,0 +1,20 @@
+AFWL = JOHY, PUA
+JOHY = SLAALY, { SLAALY }
+PUA = UBTILY
+ISVJR = "h", { ZAHALTLUA }, "j" ;
+ZAHALTLUA = ( λ | HZZPNUTLUA | WYPUAM | ISVJR | DOPSL | PM | FUNC), ";" ;
+HZZPNUTLUA = PKLUAPMPLY, "=", LEWYLZZPVU;
+WYPUAM = "wypuam", "(", LEWYLZZPVU, ")" ;
+DOPSL = "dopsl", "(", YLSLEWYLZZPVU, ")", ZAHALTLUA;
+PM = "pm", "(", YLSLEWYLZZPVU, ")", ZAHALTLUA, (λ | LSZL) ;
+LSZL = "lszl", ZAHALTLUA;
+LEWYLZZPVU = ALYT, { ("+" | "-" | "ii"), ALYT } ;
+ALYT = MHJAVY, { ("*" | "/" | "&&"), MHJAVY } ;
+YLSLEWYLZZPVU = LEWYLZZPVU, { ("==" | "<" | ">"), LEWYLZZPVU } ;
+MHJAVY = (("+" | "-", "!"), MHJAVY) | UBTILY | "(", YLSLEWYLZZPVU, ")" | PKLUAPMPLY | ZJHUM ;
+ZJHUM = "zjhum", "(", ")";
+MBUJ = {AFWL, PKLUAPMPLY}, "(", {AFWL, PKLUAPMPLY}, ")", ISVJR
+PKLUAPMPLY = SLAALY, { SLAALY | KPNPA | "_" } ;
+UBTILY = KPNPA, { KPNPA } ;
+SLAALY = ( h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z | a | b | c | d | e | f | g | H | I | J | ... | G) ;
+KPNPA = ( 4 | 5 | 6 | 7 | 8 | 9 | 0 | 1 | 2 | 3 );
