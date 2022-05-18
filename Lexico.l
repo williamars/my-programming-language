@@ -1,5 +1,5 @@
 %{
-# include "fb1-5.tab.h"
+# include "Parser.tab.h"
 %}
 %%
 
@@ -8,11 +8,15 @@
 "*"       { return MUL; }
 "/"       { return DIV; }
 "="       { return EQUAL; }
+"=="      { return EQUALEQUAL; }
+"int"     { return TYPE; }
+"str"     { return TYPE; }
 "("       { return OPEN_PAREN; }
 ")"       { return CLOSE_PAREN; }
 "{"       { return OPEN_BRACKET; }
 "}"       { return CLOSE_BRACKET; }
 ";"       { return SEMICOLON; }
+","       { return COMMA; }
 "."       { return POINT; }
 "if"      { return IF; }
 "else"    { return ELSE; }
@@ -26,7 +30,7 @@
 "<"       { return LESS_THAN; }
 [0-9]+    { yylval = atoi(yytext); return NUMBER; }
 [a-zA-Z]+ { return IDENTIFIER; }
-\n        { return EOL; }
+\n        { /* ignore breakline */ }
 [ \t]     { /* ignore whitespace */ }
-.         { printf("Mystery character %c\n", *yytext); }
+.         { /* printf("Mystery character %c\n", *yytext); */ }
 %%
