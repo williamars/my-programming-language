@@ -26,7 +26,12 @@ statement: SEMICOLON
  | IF OPEN_PAREN relexpression CLOSE_PAREN statement
  | IF OPEN_PAREN relexpression CLOSE_PAREN statement ELSE statement
  | TYPE IDENTIFIER SEMICOLON
+ | TYPE IDENTIFIER OPEN_PAREN args CLOSE_PAREN block
  ;
+
+args: TYPE IDENTIFIER
+  | TYPE IDENTIFIER COMMA args
+  ;
 
 relexpression: expression
  | relexpression EQUALEQUAL expression { $$ = $1 == $3; }
