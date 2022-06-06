@@ -33,28 +33,8 @@ RETURN = "RETURN"
 VOID = "VOID"
 FUNCTION = "FUNCTION"
 
-reserved_words = ["wypuam", "zjhum", "dopsl", "pm", "lszl", "pua", "zay", "cvpk", "ylabyu", "lxbhs", "wsbz", "tpubz", "tbsa", "kpc", "vy", "huk", "uva", "na", "sa", "pz"]
-reserved_tokens = [PRINTF, SCANF, WHILE, IF, ELSE, TYPE, TYPE, TYPE, RETURN, EQUAL, PLUS, MINUS, MULTIPLY, DIVIDE, OR, AND, NOT, GREATER_THAN, LESS_THAN, EQUALEQUAL]
-
-numbers_cript  = [3, 4, 5, 6, 7, 8, 9, 0, 1, 2]
-numbers_normal = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-
-alphabet_normal  = [
-    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
-    "k", "l", "m", "n", "o", "p", "q", "r", "s", "t",
-    "u", "v", "w", "x", "y", "z",
-    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
-    "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
-    "U", "V", "W", "X", "Y", "Z"
-]
-alphabet_cript = [
-    "h", "i", "j", "k", "l", "m", "n", "o", "p", "q",
-    "r", "s", "t", "u", "v", "w", "x", "y", "z", "a",
-    "b", "c", "d", "e", "f", "g",
-    "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q",
-    "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "A", 
-    "B", "C", "D", "E", "F", "G"
-]
+reserved_words = ["printf", "scanf", "while", "if", "else", "int", "str", "void", "return"]
+reserved_tokens = [PRINTF, SCANF, WHILE, IF, ELSE, TYPE, TYPE, TYPE, RETURN]
 
 class PrePro:
     def filter(code):
@@ -102,7 +82,6 @@ class SymbolTable:
         self.table = table
 
     def get(self, identifier):
-        # print(self.table)
         return self.table[identifier]
 
     def set(self, identifier, result):
@@ -115,10 +94,10 @@ class SymbolTable:
 
     def create(self, name, type):
         if name not in self.table.keys():
-            if type == "zay":
+            if type == "str":
                 type = STR
                 self.table[name] = ("", type)
-            elif type == "pua":
+            elif type == "int":
                 type = INT
                 self.table[name] = (0, type)
         else:
@@ -136,7 +115,6 @@ class VarDec(Node):
     def Evaluate(self, st):
         for identifier in self.children:
             st.create(identifier.value, self.value)
-
 class FuncDec(Node):
     def Evaluate(self, st):
         FuncTable.create(self.children[0].children[0].value, self.children[0].value, self)
@@ -166,47 +144,47 @@ class BinOp(Node):
     def Evaluate(self, st):
         left = self.children[0].Evaluate(st)
         right = self.children[1].Evaluate(st)
-        if self.value == "wsbz":
+        if self.value == "+":
             if left[1] == INT and right[1] == INT:
                 return (left[0] + right[0], INT)
             raise Exception("Need to sum two ints")
-        elif self.value == "tpubz":
+        elif self.value == "-":
             if left[1] == INT and right[1] == INT:
                 return (left[0] - right[0], INT)
             raise Exception("Need to sub two ints")
-        elif self.value == "tbsa":
+        elif self.value == "*":
             if left[1] == INT and right[1] == INT:
                 return (left[0] * right[0], INT)
             raise Exception("Need to mult two ints")
-        elif self.value == "na":
+        elif self.value == ">":
             variable = left[0] > right[0]
             if variable:
                 return (1, INT)
             return (0, INT)
-        elif self.value == "sa":
+        elif self.value == "<":
             variable = left[0] < right[0]
             if variable:
                 return (1, INT)
             return (0, INT)
-        elif self.value == "kpc":
+        elif self.value == "/":
             if left[1] == INT and right[1] == INT:
                 return (left[0] // right[0], INT)
             raise Exception("Need to div two ints")
-        elif self.value == "pz":
+        elif self.value == "==":
             if left[1] == right[1]:
                 variable = left[0] == right[0]
                 if variable:
                     return (1, INT)
                 return (0, INT)
             raise Exception("Need to compare two variables with the same type")
-        elif self.value == "huk":
+        elif self.value == "&&":
             if left[1] == INT and right[1] == INT:
                 variable = left[0] and right[0]
                 if variable:
                     return (1, INT)
                 return (0, INT)
             raise Exception("Need to compare two variables with the same type")
-        elif self.value == "vy":
+        elif self.value == "||":
             if left[1] == INT and right[1] == INT:
                 variable = left[0] or right[0]
                 if variable:
@@ -218,11 +196,11 @@ class BinOp(Node):
          
 class UnOp(Node):
     def Evaluate(self, st):
-        if self.value == "wsbz":
+        if self.value == "+":
             return (1 * self.children[0].Evaluate(st)[0], INT)
-        elif self.value == "tpubz":
+        elif self.value == "-":
             return (-1 * self.children[0].Evaluate(st)[0], INT)
-        elif self.value == "uva":
+        elif self.value == "!":
             variable = not self.children[0].Evaluate(st)[0]
             if variable:
                 return (1, INT)
@@ -288,26 +266,59 @@ class Tokenizer:
         self.actual = actual
 
     def selectNext(self):
-        # print(self.actual.type, self.actual.value)
         while (self.position < len(self.origin) and (self.origin[self.position] == " " or self.origin[self.position] == "\n")):
             self.position += 1
         if self.position >= len(self.origin):
             self.actual = Token(EOF, "EOF")
+        elif self.origin[self.position] == "+":
+            self.position += 1
+            self.actual = Token(PLUS, "+")
+        elif self.origin[self.position] == "-":
+            self.position += 1
+            self.actual = Token(MINUS, "-")
+        elif self.origin[self.position] == "*":
+            self.position += 1
+            self.actual = Token(MULTIPLY, "*")
+        elif self.origin[self.position] == "/":
+            self.position += 1
+            self.actual = Token(DIVIDE, "/")
         elif self.origin[self.position] == "(":
             self.position += 1
             self.actual = Token(OPEN_PARENTESIS, "(")
         elif self.origin[self.position] == ")":
             self.position += 1
             self.actual = Token(CLOSE_PARENTESIS, ")")
-        elif self.origin[self.position] == "h":
+        elif self.origin[self.position] == "=":
             self.position += 1
-            self.actual = Token(OPEN_KEY, "h")
-        elif self.origin[self.position] == "j":
+            if self.origin[self.position] == "=":
+                self.position += 1
+                self.actual = Token(EQUALEQUAL, "==")
+            else:
+                self.actual = Token(EQUAL, "=")
+        elif self.origin[self.position] == "{":
             self.position += 1
-            self.actual = Token(CLOSE_KEY, "j")
+            self.actual = Token(OPEN_KEY, "{")
+        elif self.origin[self.position] == "}":
+            self.position += 1
+            self.actual = Token(CLOSE_KEY, "}")
         elif self.origin[self.position] == ";":
             self.position += 1
-            self.actual = Token(SEMICOLON, ";")
+            self.actual = Token(SEMICOLON, ";")   
+        elif self.origin[self.position] == ">":
+            self.position += 1
+            self.actual = Token(GREATER_THAN, ">")
+        elif self.origin[self.position] == "<":
+            self.position += 1
+            self.actual = Token(LESS_THAN, "<")
+        elif self.origin[self.position] == "!":
+            self.position += 1
+            self.actual = Token(NOT, "!")
+        elif self.origin[self.position] == "&" and  self.origin[self.position + 1] == "&":
+            self.position += 2
+            self.actual = Token(AND, "&&")
+        elif self.origin[self.position] == "|" and self.origin[self.position + 1] == "|":
+            self.position += 2
+            self.actual = Token(OR, "||")
         elif self.origin[self.position] == ",":
             self.position += 1
             self.actual = Token(COMMA, ",")
@@ -318,19 +329,15 @@ class Tokenizer:
             candidate = ""
             self.position += 1
             while self.position < len(self.origin) and self.origin[self.position] != '"':
-                index = alphabet_cript.index(self.origin[self.position])
-                candidate += alphabet_normal[index]
+                candidate += self.origin[self.position]
                 self.position += 1
             self.position += 1
-            # print(candidate)
             self.actual = Token(STR, str(candidate))
         elif self.origin[self.position].isdigit():
-            index = numbers_cript.index(int(self.origin[self.position]))
-            candidate = str(numbers_normal[index])
+            candidate = self.origin[self.position]
             self.position += 1
             while self.position < len(self.origin) and self.origin[self.position].isdigit():
-                index = numbers_cript.index(int(self.origin[self.position]))
-                candidate += str(numbers_normal[index])
+                candidate += self.origin[self.position]
                 self.position += 1
             self.actual = Token(INT, int(candidate))
         elif self.origin[self.position].isalpha():
@@ -355,13 +362,13 @@ class Parser:
         while Parser.tokens.actual.type == PLUS or Parser.tokens.actual.type == MINUS or Parser.tokens.actual.type == OR or Parser.tokens.actual.type == POINT:
             if Parser.tokens.actual.type == PLUS:
                 Parser.tokens.selectNext()
-                node = BinOp("wsbz", [node, Parser.parseTerm()])
+                node = BinOp("+", [node, Parser.parseTerm()])
             if Parser.tokens.actual.type == MINUS:
                 Parser.tokens.selectNext()
-                node = BinOp("tpubz", [node, Parser.parseTerm()])
+                node = BinOp("-", [node, Parser.parseTerm()])
             if Parser.tokens.actual.type == OR:
                 Parser.tokens.selectNext()
-                node = BinOp("vy", [node, Parser.parseTerm()])
+                node = BinOp("||", [node, Parser.parseTerm()])
             if Parser.tokens.actual.type == POINT:
                 Parser.tokens.selectNext()
                 node = BinOp(".", [node, Parser.parseTerm()])
@@ -372,13 +379,13 @@ class Parser:
         while Parser.tokens.actual.type == EQUALEQUAL or Parser.tokens.actual.type == GREATER_THAN or Parser.tokens.actual.type == LESS_THAN:
             if Parser.tokens.actual.type == EQUALEQUAL:
                 Parser.tokens.selectNext()
-                node = BinOp("pz", [node, Parser.parseExpression()])
+                node = BinOp("==", [node, Parser.parseExpression()])
             if Parser.tokens.actual.type == GREATER_THAN:
                 Parser.tokens.selectNext()
-                node = BinOp("na", [node, Parser.parseExpression()])
+                node = BinOp(">", [node, Parser.parseExpression()])
             if Parser.tokens.actual.type == LESS_THAN:
                 Parser.tokens.selectNext()
-                node = BinOp("sa", [node, Parser.parseExpression()])
+                node = BinOp("<", [node, Parser.parseExpression()])
         return node
     
     def parseTerm():
@@ -386,13 +393,13 @@ class Parser:
         while Parser.tokens.actual.type == MULTIPLY or Parser.tokens.actual.type == DIVIDE or Parser.tokens.actual.type == AND:
             if Parser.tokens.actual.type == MULTIPLY:
                 Parser.tokens.selectNext()
-                node = BinOp("tbsa", [node, Parser.parseFactor()])
+                node = BinOp("*", [node, Parser.parseFactor()])
             if Parser.tokens.actual.type == DIVIDE:
                 Parser.tokens.selectNext()
-                node = BinOp("kpc", [node, Parser.parseFactor()])
+                node = BinOp("/", [node, Parser.parseFactor()])
             if Parser.tokens.actual.type == AND:
                 Parser.tokens.selectNext()
-                node = BinOp("huk", [node, Parser.parseFactor()])
+                node = BinOp("&&", [node, Parser.parseFactor()])
         return node
 
     def parseProgram():
@@ -590,13 +597,13 @@ class Parser:
                 node = Identifier(nome_identifier, [])
         elif Parser.tokens.actual.type == PLUS:
             Parser.tokens.selectNext()
-            node = UnOp("wsbz", [Parser.parseFactor()])
+            node = UnOp("+", [Parser.parseFactor()])
         elif Parser.tokens.actual.type == MINUS:
             Parser.tokens.selectNext()
-            node = UnOp("tpubz", [Parser.parseFactor()])
+            node = UnOp("-", [Parser.parseFactor()])
         elif Parser.tokens.actual.type == NOT:
             Parser.tokens.selectNext()
-            node = UnOp("uva", [Parser.parseFactor()])
+            node = UnOp("!", [Parser.parseFactor()])
         elif Parser.tokens.actual.type == OPEN_PARENTESIS:
             Parser.tokens.selectNext()
             node = Parser.parseRelExpression()
@@ -625,8 +632,7 @@ class Parser:
         Parser.tokens.selectNext()
 
         retorno = Parser.parseProgram()
-        # retorno.children.append(FuncCall("main", []))
-        retorno.children.append(FuncCall("thpu", []))
+        retorno.children.append(FuncCall("main", []))
         symbolTableGlobal = SymbolTable({})
         returnOfAll = retorno.Evaluate(symbolTableGlobal)
 
