@@ -45,7 +45,7 @@ alphabet_normal  = [
     "u", "v", "w", "x", "y", "z",
     "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
     "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
-    "U", "V", "W", "X", "Y", "Z"
+    "U", "V", "W", "X", "Y", "Z", " ", ' ', '.'
 ]
 alphabet_cript = [
     "h", "i", "j", "k", "l", "m", "n", "o", "p", "q",
@@ -53,7 +53,7 @@ alphabet_cript = [
     "b", "c", "d", "e", "f", "g",
     "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q",
     "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "A", 
-    "B", "C", "D", "E", "F", "G"
+    "B", "C", "D", "E", "F", "G", " ", ' ', '.'
 ]
 
 class PrePro:
@@ -102,12 +102,10 @@ class SymbolTable:
         self.table = table
 
     def get(self, identifier):
-        # print(self.table)
         return self.table[identifier]
 
     def set(self, identifier, result):
         tree = self.get(identifier)
-        # print(tree, identifier, result)
         if result[1] == tree[1]:
             self.table[identifier] = (result[0], tree[1])
         else:
@@ -288,7 +286,6 @@ class Tokenizer:
         self.actual = actual
 
     def selectNext(self):
-        # print(self.actual.type, self.actual.value)
         while (self.position < len(self.origin) and (self.origin[self.position] == " " or self.origin[self.position] == "\n")):
             self.position += 1
         if self.position >= len(self.origin):
@@ -322,7 +319,6 @@ class Tokenizer:
                 candidate += alphabet_normal[index]
                 self.position += 1
             self.position += 1
-            # print(candidate)
             self.actual = Token(STR, str(candidate))
         elif self.origin[self.position].isdigit():
             index = numbers_cript.index(int(self.origin[self.position]))

@@ -8,9 +8,9 @@ j
 pua thpu() h
   pua a;
   pua b;
-  a lxbhs 3;
-  b lxbhs 2;
-  b lxbhs soma(a, 4);
+  a lxbhs 6;
+  b lxbhs 5;
+  b lxbhs soma(a, 7);
   wypuam(a);
   wypuam(b);
 j

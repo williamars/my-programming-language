@@ -86,7 +86,6 @@ class SymbolTable:
 
     def set(self, identifier, result):
         tree = self.get(identifier)
-        # print(tree, identifier, result)
         if result[1] == tree[1]:
             self.table[identifier] = (result[0], tree[1])
         else:
