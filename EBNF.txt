@@ -1,20 +1,22 @@
+PROGRAM = { DECLARATION } ; 
+DECLARATION = TYPE, IDENTIFIER, "(",  (λ | (TYPE, IDENTIFIER, (",", TYPE, IDENTIFIER)*), ")", BLOCK;
 BLOCK = "{", { STATEMENT }, "}" ;
-STATEMENT = ( λ | ASSIGNMENT | PRINT | BLOCK | WHILE | IF | FUNC), ";" ;
-ASSIGNMENT = IDENTIFIER, "=", EXPRESSION ;
-PRINT = "printf", "(", EXPRESSION, ")" ;
+STATEMENT = ( λ | ASSIGNMENT , ";" | PRINT , ";" | BLOCK | WHILE | IF | VARDEC , ";" | RETURN , ";") ;
+VARDEC = TYPE, IDENTIFIER, (",", IDENTIFIER)*;
+RETURN = "return", "(", RELEXPRESSION, ")";
+TYPE = "int" | "str" | "void";
+ASSIGNMENT = IDENTIFIER, ("=", RELEXPRESSION | "(" ,  (λ | (RELEXPRESSION, (",", RELEXPRESSION)*), ");
+PRINT = "printf", "(", RELEXPRESSION, ")" ;
 WHILE = "while", "(", RELEXPRESSION, ")", STATEMENT ;
 IF = "if", "(", RELEXPRESSION, ")", STATEMENT, (λ | ELSE) ;
 ELSE = "else", STATEMENT;
-EXPRESSION = TERM, { ("+" | "-" | "||"), TERM } ;
+EXPRESSION = TERM, { ("+" | "-" | "||" | "."), TERM } ;
 TERM = FACTOR, { ("*" | "/" | "&&"), FACTOR } ;
 RELEXPRESSION = EXPRESSION, { ("==" | "<" | ">"), EXPRESSION } ;
-FACTOR = (("+" | "-", "!"), FACTOR) | NUMBER | "(", RELEXPRESSION, ")" | IDENTIFIER | SCANF ;
+FACTOR = (("+" | "-", "!"), FACTOR) | NUMBER | "(", RELEXPRESSION, ")" | IDENTIFIER, ( "(" ,  (λ | (RELEXPRESSION, (",", RELEXPRESSION)*), ") )*| SCANF | STRING ;
 SCANF = "scanf", "(", ")";
+STRING = """,(LETTER| DIGIT)*, """;
 IDENTIFIER = LETTER, { LETTER | DIGIT | "_" } ;
-FUNC = {TYPE, IDENTIFIER}, "(", {TYPE, IDENTIFIER}, ")", BLOCK
-TYPE = CHAR, INT
-CHAR = LETTER, { LETTER }
-INT = NUMBER
 NUMBER = DIGIT, { DIGIT } ;
 LETTER = ( a | ... | z | A | ... | Z ) ;
 DIGIT = ( 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 0 ) ;
